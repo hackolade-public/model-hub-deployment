@@ -61,7 +61,7 @@ resource "terraform_data" "copy_docker_images" {
       echo "NAMESPACE: $NAMESPACE"
       echo "REGION: $REGION"
       echo "Running podman command..."
-      podman run --rm -e OCI_TOKEN -e COMPARTMENT_NAME -e NAMESPACE -e REGION -e OCI_USERNAME hackoladepublic.azurecr.io/model-hub-sync/copy-docker-images:develop
+      podman run --rm -e OCI_TOKEN -e COMPARTMENT_NAME -e NAMESPACE -e REGION -e OCI_USERNAME "hackoladepublic.azurecr.io/model-hub-sync/copy-docker-images:develop"
     EOT
   }
 }
