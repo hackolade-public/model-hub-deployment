@@ -9,7 +9,7 @@ variable autonomous_database_username {
   description = "value of the database user that will be created"
 }
 variable autonomous_database_password {
-  sensitive = true
+  sensitive = false
   description = "password of the database. This password will be shared with the admin of the database and the one created by autonomous_database_username"
 }
 variable autonomous_database_ecpu_count {
@@ -34,25 +34,25 @@ variable hub_db_name {
   description = "Name of the database that will be created"
 }
 variable github_token {
-  sensitive = true
+  sensitive = false
   nullable = true
   default = ""
   description = "Github token used to download the model files from GitHub"
 }
 variable github_webhook_secret {
-  sensitive = true
+  sensitive = false
   nullable = true
   default = ""
   description = "Secret configured on the Github webhook page"
 }
 variable gitlab_token {
-  sensitive = true
+  sensitive = false
   nullable = true
   default = ""
   description = "Gitlab token used to download the model files from GitLab"
 }
 variable gitlab_webhook_secret {
-  sensitive = true
+  sensitive = false
   nullable = true
   default = ""
   description = "Secret configured on the GitLab webhook page"
@@ -63,13 +63,13 @@ variable gitlab_server_host_domain_name {
   default = ""
 }
 variable gitlab_server_token {
-  sensitive = true
+  sensitive = false
   nullable = true
   default = ""
   description = "Gitlab token used to download the model files from your GitLab server"
 }
 variable gitlab_server_webhook_secret {
-  sensitive = true
+  sensitive = false
   nullable = true
   default = ""
   description = "Secret configured on your GitLab server webhook page"
