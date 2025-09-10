@@ -1,18 +1,10 @@
-/*
- * Copyright © 2016-2025 by IntegrIT S.A. dba Hackolade.  All rights reserved.
- *
- * The copyright to the computer software herein is the property of IntegrIT S.A.
- * The software may be used and/or copied only with the written permission of
- * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
- * the agreement/contract under which the software has been supplied.
- */
 resource oci_functions_application model-hub-sync {
   depends_on = [terraform_data.copy_docker_images]
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   config = {
     "GIT_PROVIDER_GITLAB_SERVER_HOST_DOMAIN_NAME" = var.gitlab_server_host_domain_name
     "HUB_DOMAIN_NAME"      = var.hub_domain_name
-    # "JWK_URL"              = format("%s/admin/v1/SigningCert/jwk", oci_identity_domain.modelhub_domain.url)
+    "JWK_URL"              = format("%s/admin/v1/SigningCert/jwk", oci_identity_domain.modelhub_domain.url)
     "OCI_QUEUE_ID"         = oci_queue_queue.gitFileChanges.id
     "OCI_USERNAME"         = format("%s/%s",data.oci_objectstorage_namespace.object_storage_namespace.namespace,var.oci_username)
     "ORACLE_DB_CONNECTION_NO_PARALELLISM" = lookup(local.database_profiles, "LOW") # sqitch fails when running with parallelism

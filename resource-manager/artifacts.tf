@@ -1,11 +1,3 @@
-/*
- * Copyright © 2016-2025 by IntegrIT S.A. dba Hackolade.  All rights reserved.
- *
- * The copyright to the computer software herein is the property of IntegrIT S.A.
- * The software may be used and/or copied only with the written permission of
- * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
- * the agreement/contract under which the software has been supplied.
- */
 resource oci_artifacts_container_configuration container_configuration {
   compartment_id                      = oci_identity_compartment.modelhub_compartment.id
   is_repository_created_on_first_push = "false"
@@ -44,7 +36,6 @@ resource oci_artifacts_container_repository model-hub-sync-update-oci-functions 
 }
 
 resource "terraform_data" "copy_docker_images" {
-  depends_on = [time_sleep.wait_for_namespace]
   triggers_replace = [
     oci_artifacts_container_repository.model-hub-sync-apply-model-changes.id,
     oci_artifacts_container_repository.model-hub-sync-database-migration.id,
