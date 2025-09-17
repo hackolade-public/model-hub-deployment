@@ -35,7 +35,8 @@ resource "null_resource" "refresh_vault_policy" {
       # Update the policy description to force refresh
       oci iam policy update \
         --policy-id "${oci_identity_policy.hck-hub-functions-secrets.id}" \
-        --statements "[\"allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}\"]"
+        --description "Give functions access to the vault and secrets - refreshed at $(date)" \
+        --statements '["allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"]'
 
       echo "Policy refreshed, waiting for propagation..."
       sleep 30
