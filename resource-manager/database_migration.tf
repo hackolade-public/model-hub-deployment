@@ -17,7 +17,7 @@ resource "time_sleep" "wait_for_functions_to_be_ready" {
     hck_hub_functions_dynamic_group = oci_identity_dynamic_group.hck-hub-functions.id
     kms_vault = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
   }
-  create_duration = "1m"
+  create_duration = "3m"
 }
 
 # Force policy propagation by updating the existing policy. Without a manual change, the function gets stuck in a permission denied
