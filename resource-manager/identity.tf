@@ -50,16 +50,16 @@ resource oci_identity_policy hck-hub-functions {
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to manage repos in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read objectstorage-namespaces in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
     "allow any-user to use functions-family in compartment ${var.compartment_name} where ALL {request.principal.type= 'ApiGateway', request.resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'}",
+    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read vaults in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to inspect compartments in compartment id ${oci_identity_compartment.modelhub_compartment.id}"
   ]
 }
 
-resource oci_identity_policy hck-hub-functions-vault-and-secrets {
+resource oci_identity_policy hck-hub-functions-secrets {
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   description = "Give functions access to the vault and secrets"
-  name = "${var.compartment_name}-hck-hub-functions-vault-and-secrets"
+  name = "${var.compartment_name}-hck-hub-functions-secrets"
   statements = [
-    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read vaults in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
-    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"
+    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to inspect secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"
   ]
 }

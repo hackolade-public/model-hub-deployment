@@ -13,7 +13,7 @@ resource "time_sleep" "wait_for_functions_to_be_ready" {
   triggers = {
     database_migration = oci_functions_function.database-migration.id
     hck_hub_functions_policy =oci_identity_policy.hck-hub-functions.id
-    hck_hub_functions_vault_and_secrets_policy =oci_identity_policy.hck-hub-functions-vault-and-secrets.id
+    hck_hub_functions_vault_and_secrets_policy =oci_identity_policy.hck-hub-functions-secrets.id
     hck_hub_functions_dynamic_group = oci_identity_dynamic_group.hck-hub-functions.id
     kms_vault = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
   }
@@ -24,7 +24,7 @@ resource "time_sleep" "wait_for_functions_to_be_ready" {
 # until a manual change is made to force OCI to refresh the policy
 resource "null_resource" "refresh_vault_policy" {
   depends_on = [
-    oci_identity_policy.hck-hub-functions-vault-and-secrets,
+    oci_identity_policy.hck-hub-functions-secrets,
     time_sleep.wait_for_functions_to_be_ready
   ]
 
@@ -34,8 +34,8 @@ resource "null_resource" "refresh_vault_policy" {
 
       # Update the policy description to force refresh
       oci iam policy update \
-        --policy-id "${oci_identity_policy.hck-hub-functions-vault-and-secrets.id}" \
-        --description "Give functions access to the vault and secrets - refreshed at $(date)"
+        --policy-id "${oci_identity_policy.hck-hub-functions-secrets.id}" \
+        --statements "[\"allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}\"]"
 
       echo "Policy refreshed, waiting for propagation..."
       sleep 30
@@ -43,7 +43,7 @@ resource "null_resource" "refresh_vault_policy" {
   }
 
   triggers = {
-    original_policy = oci_identity_policy.hck-hub-functions-vault-and-secrets.id
+    original_policy = oci_identity_policy.hck-hub-functions-secrets.id
     timestamp = timestamp()
   }
 }
