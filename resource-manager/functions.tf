@@ -111,27 +111,3 @@ resource oci_functions_function update-oci-functions {
     is_enabled = "false"
   }
 }
-
-# Wait a bit for the functions and policies to be ready
-# If not, the terraform will fail and start throwing 404 errors because the policies are not ready
-resource "time_sleep" "wait_for_functions_to_be_ready" {
-  triggers = {
-    database_migration = oci_functions_function.database-migration.id
-    hck_hub_functions_policy =oci_identity_policy.hck-hub-functions.id
-    hck_hub_functions_vault_and_secrets_policy =oci_identity_policy.hck-hub-functions-vault-and-secrets.id
-    hck_hub_functions_dynamic_group = oci_identity_dynamic_group.hck-hub-functions.id
-    kms_vault = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
-  }
-  create_duration = "30s"
-}
-resource "oci_functions_invoke_function" "database-migration" {
-  depends_on = [
-    terraform_data.create_new_schema,
-    time_sleep.wait_for_functions_to_be_ready
-  ]
-  function_id = oci_functions_function.database-migration.id
-
-  fn_intent = "httprequest"
-  fn_invoke_type = "sync"
-  base64_encode_content = false
-}
