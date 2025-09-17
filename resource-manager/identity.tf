@@ -1,3 +1,11 @@
+/*
+ * Copyright © 2016-2025 by IntegrIT S.A. dba Hackolade.  All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of IntegrIT S.A.
+ * The software may be used and/or copied only with the written permission of
+ * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
+ * the agreement/contract under which the software has been supplied.
+ */
 data "oci_identity_users" "all_users" {
   compartment_id = var.tenancy_ocid
 
@@ -44,6 +52,7 @@ resource oci_identity_policy hck-hub-functions {
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read objectstorage-namespaces in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
     "allow any-user to use functions-family in compartment ${var.compartment_name} where ALL {request.principal.type= 'ApiGateway', request.resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'}",
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
+    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secrets in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read vaults in compartment id ${oci_identity_compartment.modelhub_compartment.id}",
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to inspect compartments in compartment id ${oci_identity_compartment.modelhub_compartment.id}"
   ]
