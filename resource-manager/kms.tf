@@ -7,22 +7,23 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource oci_kms_vault Stores-secrets-used-by-the-model-hub {
-  lifecycle {
-    # The destroy fails anyways, so we prevent it to be able to recreate the stack
-    prevent_destroy = true
-  }
-
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   display_name = "Stores secrets used by the hub in the current compartment"
   vault_type = "DEFAULT"
 }
 
+# Wait a bit for the kms vault to be ready
+# If not, the terraform will fail because the vault are not found
+resource "time_sleep" "wait_for_kms_vault_to_be_ready" {
+  depends_on = [
+    oci_kms_vault.Stores-secrets-used-by-the-model-hub
+  ]
+  create_duration = "30s"
+}
 resource oci_kms_key HubEncryptionKey {
-  lifecycle {
-    # The destroy fails anyways, so we prevent it to be able to recreate the stack
-    prevent_destroy = true
-  }
-
+  depends_on = [
+    time_sleep.wait_for_kms_vault_to_be_ready
+  ]
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   desired_state = "ENABLED"
   display_name  = "HubEncryptionKey"
@@ -37,11 +38,6 @@ resource oci_kms_key HubEncryptionKey {
 }
 
 resource oci_kms_key_version HubEncryptionKey_key_version {
-  lifecycle {
-    # The destroy fails anyways, so we prevent it to be able to recreate the stack
-    prevent_destroy = true
-  }
-
   key_id              = oci_kms_key.HubEncryptionKey.id
   management_endpoint = oci_kms_vault.Stores-secrets-used-by-the-model-hub.management_endpoint
 }

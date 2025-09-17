@@ -53,7 +53,7 @@ resource "time_sleep" "wait_for_artifacts_to_be_ready" {
     oci_artifacts_container_repository.model-hub-sync-update-oci-functions,
     oci_identity_auth_token.auth_token_registry
   ]
-  create_duration = "10s"
+  create_duration = "150s"
 }
 
 resource "terraform_data" "copy_docker_images" {
@@ -75,6 +75,6 @@ resource "terraform_data" "copy_docker_images" {
       NAMESPACE = data.oci_objectstorage_namespace.object_storage_namespace.namespace
     }
 
-    command = "podman run --rm -e OCI_TOKEN -e COMPARTMENT_NAME -e NAMESPACE -e REGION -e OCI_USERNAME hackoladepublic.azurecr.io/model-hub-sync/copy-docker-images:investigate-terraform"
+    command = "podman run --rm -e OCI_TOKEN -e COMPARTMENT_NAME -e NAMESPACE -e REGION -e OCI_USERNAME hackoladepublic.azurecr.io/model-hub-sync/copy-docker-images:develop"
   }
 }
