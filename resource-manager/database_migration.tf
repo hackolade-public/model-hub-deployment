@@ -8,7 +8,8 @@
  */
 
 # Wait for the functions and policies to be ready
-# OCI policies can take several minutes to fully propagate, especially for vault access
+# OCI policies can take some time to fully propagate
+# It's especially needed for functions to have access to the vault and secrets
 resource "time_sleep" "wait_for_functions_to_be_ready" {
   triggers = {
     database_migration = oci_functions_function.database-migration.id
@@ -17,10 +18,11 @@ resource "time_sleep" "wait_for_functions_to_be_ready" {
     hck_hub_functions_dynamic_group = oci_identity_dynamic_group.hck-hub-functions.id
     kms_vault = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
   }
-  create_duration = "3m"
+  create_duration = "1m"
 }
 
-# Force policy propagation by updating the existing policy. Without a manual change, the function gets stuck in a permission denied
+# Force policy propagation by updating the existing policy.
+# Without a manual change, the function gets stuck in a permission denied
 # until a manual change is made to force OCI to refresh the policy
 resource "terraform_data" "refresh_vault_policy" {
   depends_on = [
