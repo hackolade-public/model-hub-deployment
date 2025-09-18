@@ -1,3 +1,11 @@
+/*
+ * Copyright © 2016-2025 by IntegrIT S.A. dba Hackolade.  All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of IntegrIT S.A.
+ * The software may be used and/or copied only with the written permission of
+ * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
+ * the agreement/contract under which the software has been supplied.
+ */
 data "oci_identity_users" "all_users" {
   compartment_id = var.tenancy_ocid
 
@@ -25,14 +33,13 @@ resource oci_identity_dynamic_group hck-hub-functions {
   compartment_id = var.tenancy_ocid
   description = "Dynamic group to give functions access to other OCI components"
   freeform_tags = {}
-  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'},All {resource.type = 'serviceconnector',  resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'}, ALL {resource.type='resourceschedule', resource.id='${oci_resource_scheduler_schedule.update-oci-functions.id}'}}"
+  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'},All {resource.type = 'serviceconnector',  resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'}, ALL {resource.type='resourceschedule',  resource.compartment.id = '${oci_identity_compartment.modelhub_compartment.id}'}}"
   name          = "${var.compartment_name}-hck-hub-functions"
 }
 
 resource oci_identity_policy hck-hub-functions {
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   description = "Give functions access to other components"
-  freeform_tags = {}
   name = "${var.compartment_name}-hck-hub-functions"
   statements = [
     "allow dynamic-group ${var.compartment_name}-hck-hub-functions to use queues in compartment ${var.compartment_name}",

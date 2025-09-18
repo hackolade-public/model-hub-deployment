@@ -1,10 +1,30 @@
+/*
+ * Copyright © 2016-2025 by IntegrIT S.A. dba Hackolade.  All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of IntegrIT S.A.
+ * The software may be used and/or copied only with the written permission of
+ * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
+ * the agreement/contract under which the software has been supplied.
+ */
 resource oci_kms_vault Stores-secrets-used-by-the-model-hub {
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   display_name = "Stores secrets used by the hub in the current compartment"
   vault_type = "DEFAULT"
 }
 
+# Wait a bit for the kms vault to be ready
+# If not, the terraform will fail because the vault are not found
+resource "time_sleep" "wait_for_kms_vault_to_be_ready" {
+  depends_on = [
+    oci_kms_vault.Stores-secrets-used-by-the-model-hub
+  ]
+  create_duration = "30s"
+}
+
 resource oci_kms_key HubEncryptionKey {
+  depends_on = [
+    time_sleep.wait_for_kms_vault_to_be_ready
+  ]
   compartment_id = oci_identity_compartment.modelhub_compartment.id
   desired_state = "ENABLED"
   display_name  = "HubEncryptionKey"

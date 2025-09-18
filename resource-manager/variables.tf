@@ -1,9 +1,25 @@
-variable region {}
+/*
+ * Copyright © 2016-2025 by IntegrIT S.A. dba Hackolade.  All rights reserved.
+ *
+ * The copyright to the computer software herein is the property of IntegrIT S.A.
+ * The software may be used and/or copied only with the written permission of
+ * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
+ * the agreement/contract under which the software has been supplied.
+ */
+variable compartment_ocid {}
+variable tenancy_ocid {}
 variable compartment_name {
   description = "Name of the compartment that will be created"
 }
-variable compartment_ocid {}
-variable tenancy_ocid {}
+variable region {}
+variable oci_username {
+  description = "Username of an OCI user that is going to be used to push docker images into OCI registry"
+}
+variable hub_db_name {
+  default = "hckhub"
+  description = "Name of the database that will be created"
+}
+
 variable autonomous_database_username {
   default = "hck_hub"
   description = "value of the database user that will be created"
@@ -21,17 +37,6 @@ variable autonomous_database_storage {
   default = 20
   type = number
   description = "Specify the storage you wish to make available to your database. Minimum starts at 20"
-}
-variable oci_username {
-  description = "Username of an OCI user that is going to be used to push docker images into OCI registry"
-}
-variable hub_domain_name {
-  default = "<org>.hackolade.com"
-  description = "DNS of the HUB portal"
-}
-variable hub_db_name {
-  default = "hckhub"
-  description = "Name of the database that will be created"
 }
 variable github_token {
   sensitive = true
@@ -73,4 +78,8 @@ variable gitlab_server_webhook_secret {
   nullable = true
   default = ""
   description = "Secret configured on your GitLab server webhook page"
+}
+variable hub_domain_name {
+  default = "<org>.hackolade.com"
+  description = "DNS of the HUB portal"
 }
