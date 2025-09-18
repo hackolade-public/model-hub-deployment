@@ -28,7 +28,7 @@ resource "terraform_data" "refresh_vault_policy" {
     time_sleep.wait_for_functions_to_be_ready
   ]
 
-  triggers_replace = [oci_identity_policy.hck-hub-functions-secrets]
+  triggers_replace = [time_sleep.wait_for_functions_to_be_ready]
 
   provisioner "local-exec" {
     on_failure = fail
