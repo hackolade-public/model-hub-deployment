@@ -60,6 +60,6 @@ resource oci_identity_policy hck-hub-functions-secrets {
   description = "Give functions access to the vault and secrets"
   name = "${var.compartment_name}-hck-hub-functions-secrets"
   statements = [
-    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to inspect secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"
+    "allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"
   ]
 }
