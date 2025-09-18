@@ -54,7 +54,7 @@ resource "oci_functions_invoke_function" "database-migration" {
   depends_on = [
     terraform_data.create_new_schema,
     time_sleep.wait_for_functions_to_be_ready,
-    time_sleep.refresh_vault_policy
+    null_resource.refresh_vault_policy
   ]
   triggers = {
     refresh_vault_policy = null_resource.refresh_vault_policy.id
