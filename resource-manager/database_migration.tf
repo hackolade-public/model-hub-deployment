@@ -50,18 +50,15 @@ resource "null_resource" "refresh_vault_policy" {
   }
 }
 
-# Wait for the refreshed policy to propagate
-resource "time_sleep" "wait_for_refreshed_policy" {
-  depends_on = [null_resource.refresh_vault_policy]
-  create_duration = "1m"
-}
-
 resource "oci_functions_invoke_function" "database-migration" {
   depends_on = [
     terraform_data.create_new_schema,
     time_sleep.wait_for_functions_to_be_ready,
-    time_sleep.wait_for_refreshed_policy
+    time_sleep.refresh_vault_policy
   ]
+  triggers = {
+    refresh_vault_policy = null_resource.refresh_vault_policy.id
+  }
   function_id = oci_functions_function.database-migration.id
 
   fn_intent = "httprequest"
