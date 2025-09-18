@@ -8,7 +8,7 @@
  */
 resource oci_resource_scheduler_schedule update-oci-functions {
   action         = "START_RESOURCE"
-  compartment_id = var.compartment_ocid
+  compartment_id = oci_identity_compartment.modelhub_compartment.id
   defined_tags = {}
   description  = "Updates docker images for OCI functions and run db migrations"
   display_name = "${var.compartment_name}-update-oci-functions"

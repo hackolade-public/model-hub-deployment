@@ -14,52 +14,20 @@ resource "time_sleep" "wait_for_functions_to_be_ready" {
   triggers = {
     database_migration = oci_functions_function.database-migration.id
     hck_hub_functions_policy =oci_identity_policy.hck-hub-functions.id
-    hck_hub_functions_vault_and_secrets_policy =oci_identity_policy.hck-hub-functions-secrets.id
     hck_hub_functions_dynamic_group = oci_identity_dynamic_group.hck-hub-functions.id
     kms_vault = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
   }
-  create_duration = "1m"
-}
-
-# Force policy propagation by updating the existing policy.
-# Without a manual change, the function gets stuck in a permission denied
-# until a manual change is made to force OCI to refresh the policy
-resource "terraform_data" "refresh_vault_policy" {
-  depends_on = [
-    oci_identity_policy.hck-hub-functions-secrets,
-    time_sleep.wait_for_functions_to_be_ready
-  ]
-
-  triggers_replace = [time_sleep.wait_for_functions_to_be_ready]
-
-  provisioner "local-exec" {
-    on_failure = fail
-    command = <<-EOT
-      echo "Refreshing vault policy to force propagation..."
-
-      # Update the policy description to force refresh
-      oci iam policy update \
-        --policy-id "${oci_identity_policy.hck-hub-functions-secrets.id}" \
-        --force \
-        --version-date '' \
-        --freeform-tags '{"RefreshedOn": "$(date)"}' \
-        --statements '["allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"]'
-
-      echo "Policy refreshed, waiting for propagation..."
-      sleep 30
-    EOT
-  }
+  create_duration = "30s"
 }
 
 resource "oci_functions_invoke_function" "database-migration" {
   depends_on = [
     terraform_data.create_new_schema,
-    terraform_data.refresh_vault_policy,
     time_sleep.wait_for_functions_to_be_ready
   ]
 
   lifecycle {
-    replace_triggered_by = [terraform_data.refresh_vault_policy]
+    replace_triggered_by = [terraform_data.create_new_schema]
   }
 
   function_id = oci_functions_function.database-migration.id
