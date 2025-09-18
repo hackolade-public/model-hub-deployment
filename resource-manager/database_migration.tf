@@ -22,13 +22,16 @@ resource "time_sleep" "wait_for_functions_to_be_ready" {
 
 # Force policy propagation by updating the existing policy. Without a manual change, the function gets stuck in a permission denied
 # until a manual change is made to force OCI to refresh the policy
-resource "null_resource" "refresh_vault_policy" {
+resource "terraform_data" "refresh_vault_policy" {
   depends_on = [
     oci_identity_policy.hck-hub-functions-secrets,
     time_sleep.wait_for_functions_to_be_ready
   ]
 
+  triggers_replace = [oci_identity_policy.hck-hub-functions-secrets]
+
   provisioner "local-exec" {
+    on_failure = fail
     command = <<-EOT
       echo "Refreshing vault policy to force propagation..."
 
@@ -43,22 +46,19 @@ resource "null_resource" "refresh_vault_policy" {
       sleep 30
     EOT
   }
-
-  triggers = {
-    original_policy = oci_identity_policy.hck-hub-functions-secrets.id
-    timestamp = timestamp()
-  }
 }
 
 resource "oci_functions_invoke_function" "database-migration" {
   depends_on = [
     terraform_data.create_new_schema,
-    time_sleep.wait_for_functions_to_be_ready,
-    null_resource.refresh_vault_policy
+    terraform_data.refresh_vault_policy,
+    time_sleep.wait_for_functions_to_be_ready
   ]
-  triggers = {
-    refresh_vault_policy = null_resource.refresh_vault_policy.id
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.refresh_vault_policy]
   }
+
   function_id = oci_functions_function.database-migration.id
 
   fn_intent = "httprequest"
