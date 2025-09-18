@@ -7,4 +7,3 @@
  * the agreement/contract under which the software has been supplied.
  */
 data oci_objectstorage_namespace object_storage_namespace {}
-
