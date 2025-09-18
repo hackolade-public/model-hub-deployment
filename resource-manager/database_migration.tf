@@ -42,7 +42,7 @@ resource "terraform_data" "refresh_vault_policy" {
         --policy-id "${oci_identity_policy.hck-hub-functions-secrets.id}" \
         --force \
         --version-date '' \
-        --freeform-tags '{RefreshedOn: "$(date)"}' \
+        --freeform-tags '{"RefreshedOn": "$(date)"}' \
         --statements '["allow dynamic-group ${var.compartment_name}-hck-hub-functions to read secret-family in compartment id ${oci_identity_compartment.modelhub_compartment.id}"]'
 
       echo "Policy refreshed, waiting for propagation..."
