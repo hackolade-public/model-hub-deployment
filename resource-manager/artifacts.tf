@@ -75,7 +75,7 @@ resource "terraform_data" "copy_docker_images" {
     environment = {
       OCI_TOKEN = oci_identity_auth_token.auth_token_registry.token
       OCI_USERNAME = format("%s/%s",data.oci_objectstorage_namespace.object_storage_namespace.namespace,var.oci_username)
-      COMPARTMENT_NAME = data.oci_identity_compartment.modelhub_compartment.name
+      COMPARTMENT_NAME = local.repository_name_prefix
       REGION = data.oci_identity_regions.region.regions[0]["key"]
       NAMESPACE = data.oci_objectstorage_namespace.object_storage_namespace.namespace
     }
