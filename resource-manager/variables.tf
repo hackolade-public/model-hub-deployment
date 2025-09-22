@@ -22,7 +22,7 @@ variable hub_db_name {
     error_message = "The hub_db_name value must be less than 30 characters."
   }
   validation {
-    condition     = length(regexall("^[a-zA-Z0-9]+$", var.hub_db_name)) == 0
+    condition     = length(regexall("[^a-zA-Z0-9]+", var.hub_db_name)) == 0
     error_message = "The hub_db_name value must contain only letters and numbers, starting with a letter."
   }
 }
