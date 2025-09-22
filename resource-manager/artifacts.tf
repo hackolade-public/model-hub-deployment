@@ -8,7 +8,7 @@
  */
 
 locals {
-  repository_name_prefix = data.oci_identity_compartment.modelhub_compartment.name
+  repository_name_prefix = lower(data.oci_identity_compartment.modelhub_compartment.name)
 }
 
 resource oci_artifacts_container_configuration container_configuration {

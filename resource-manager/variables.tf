@@ -17,6 +17,14 @@ variable oci_username {
 variable hub_db_name {
   default = "hckhub"
   description = "Name of the database that will be created. The name must contain only letters and numbers, starting with a letter. 30 characters max. Spaces are not allowed"
+  validation {
+    condition     = length(var.hub_db_name) <= 30
+    error_message = "The hub_db_name value must be less than 30 characters."
+  }
+  validation {
+    condition     = regex("^[a-zA-Z0-9]+$", var.hub_db_name)
+    error_message = "The hub_db_name value must contain only letters and numbers, starting with a letter."
+  }
 }
 
 variable autonomous_database_username {
