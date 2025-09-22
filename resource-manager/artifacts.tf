@@ -18,7 +18,7 @@ resource oci_artifacts_container_configuration container_configuration {
 
 resource oci_artifacts_container_repository model-hub-sync-apply-model-changes {
   compartment_id = var.compartment_ocid
-  display_name = "${repository_name_prefix}/apply-model-changes"
+  display_name = "${local.repository_name_prefix}/apply-model-changes"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -26,7 +26,7 @@ resource oci_artifacts_container_repository model-hub-sync-apply-model-changes {
 
 resource oci_artifacts_container_repository model-hub-sync-database-migration {
   compartment_id = var.compartment_ocid
-  display_name = "${repository_name_prefix}/database-migration"
+  display_name = "${local.repository_name_prefix}/database-migration"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -34,7 +34,7 @@ resource oci_artifacts_container_repository model-hub-sync-database-migration {
 
 resource oci_artifacts_container_repository model-hub-sync-sync {
   compartment_id = var.compartment_ocid
-  display_name = "${repository_name_prefix}/sync"
+  display_name = "${local.repository_name_prefix}/sync"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -42,7 +42,7 @@ resource oci_artifacts_container_repository model-hub-sync-sync {
 
 resource oci_artifacts_container_repository model-hub-sync-update-oci-functions {
   compartment_id = var.compartment_ocid
-  display_name = "${repository_name_prefix}/update-oci-functions"
+  display_name = "${local.repository_name_prefix}/update-oci-functions"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"

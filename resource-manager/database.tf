@@ -8,7 +8,7 @@
  */
 
 locals {
-  hub_db_name_prefix = regex_replace(lower(data.oci_identity_compartment.modelhub_compartment.name), "/[^a-z0-9]/", "")
+  hub_db_name_prefix = regexreplace(lower(data.oci_identity_compartment.modelhub_compartment.name), "/[^a-z0-9]/", "")
 }
 
 locals {
