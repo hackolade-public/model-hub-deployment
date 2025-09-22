@@ -7,14 +7,14 @@
  * the agreement/contract under which the software has been supplied.
  */
 data "oci_database_autonomous_databases" "existing_db" {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name   = var.hub_db_name
 }
 
 resource oci_database_autonomous_database hckhub {
   admin_password = var.autonomous_database_password
   autonomous_maintenance_schedule_type = "REGULAR"
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   compute_count = var.autonomous_database_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? 1 : 2) : var.autonomous_database_ecpu_count
   compute_model = "ECPU"
   data_storage_size_in_gb = var.autonomous_database_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? "20" : "1024") : var.autonomous_database_storage

@@ -8,9 +8,6 @@
  */
 variable compartment_ocid {}
 variable tenancy_ocid {}
-variable compartment_name {
-  description = "Name of the compartment that will be created"
-}
 variable region {}
 variable oci_username {
   description = "Username of an OCI user that is going to be used to push docker images into OCI registry"

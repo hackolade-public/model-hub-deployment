@@ -7,7 +7,7 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource oci_sch_service_connector apply_model_changes_service_connector {
-    compartment_id = oci_identity_compartment.modelhub_compartment.id
+    compartment_id = var.compartment_ocid
     display_name = "Apply model changes"
     source {
         kind = "plugin"

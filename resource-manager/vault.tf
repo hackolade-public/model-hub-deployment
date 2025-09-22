@@ -7,7 +7,7 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource oci_vault_secret oracle_password_secret {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Password to connect to the Hub database"
   freeform_tags = {
   }
@@ -23,7 +23,7 @@ resource oci_vault_secret oracle_password_secret {
 }
 
 resource oci_vault_secret oci_token {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Token used to push images into OCI container registry"
   freeform_tags = {
   }
@@ -39,7 +39,7 @@ resource oci_vault_secret oci_token {
 }
 
 resource oci_vault_secret github_webhook_secret {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Webhook secret configured on GitHub"
   freeform_tags = {
   }
@@ -55,7 +55,7 @@ resource oci_vault_secret github_webhook_secret {
 }
 
 resource oci_vault_secret github_token {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Token used to access content of GitHub repositories"
   freeform_tags = {
   }
@@ -71,7 +71,7 @@ resource oci_vault_secret github_token {
 }
 
 resource oci_vault_secret gitlab_webhook_secret {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Webhook secret configured on GitLab"
   freeform_tags = {
   }
@@ -87,7 +87,7 @@ resource oci_vault_secret gitlab_webhook_secret {
 }
 
 resource oci_vault_secret gitlab_token {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Token used to access content of GitLab repositories"
   freeform_tags = {
   }
@@ -103,7 +103,7 @@ resource oci_vault_secret gitlab_token {
 }
 
 resource oci_vault_secret gitlab_server_webhook_secret {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Webhook secret configured on GitLab server"
   freeform_tags = {
   }
@@ -119,7 +119,7 @@ resource oci_vault_secret gitlab_server_webhook_secret {
 }
 
 resource oci_vault_secret gitlab_server_token {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Token used to access content of GitLab server repositories"
   freeform_tags = {
   }

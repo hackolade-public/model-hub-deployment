@@ -17,7 +17,7 @@ resource oci_core_vcn model-hub-VCN {
   cidr_blocks = [
     "10.0.0.0/16",
   ]
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "model hub VCN"
   dns_label    = "modelhubvcn"
   ipv6private_cidr_blocks = []
@@ -26,13 +26,13 @@ resource oci_core_vcn model-hub-VCN {
 
 resource oci_core_nat_gateway NAT-gateway-model-hub-VCN {
   block_traffic  = "false"
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "NAT gateway-model hub VCN"
   vcn_id = oci_core_vcn.model-hub-VCN.id
 }
 
 resource oci_core_default_dhcp_options Default-DHCP-Options-for-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name     = "Default DHCP Options for model hub VCN"
   domain_name_type = "CUSTOM_DOMAIN"
   manage_default_resource_id = oci_core_vcn.model-hub-VCN.default_dhcp_options_id
@@ -51,7 +51,7 @@ resource oci_core_default_dhcp_options Default-DHCP-Options-for-model-hub-VCN {
 }
 
 resource oci_core_internet_gateway Internet-gateway-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "Internet gateway-model hub VCN"
   enabled      = "true"
   vcn_id = oci_core_vcn.model-hub-VCN.id
@@ -59,7 +59,7 @@ resource oci_core_internet_gateway Internet-gateway-model-hub-VCN {
 
 resource oci_core_subnet private-subnet-model-hub-VCN {
   cidr_block     = "10.0.1.0/24"
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   dhcp_options_id = oci_core_default_dhcp_options.Default-DHCP-Options-for-model-hub-VCN.id
   display_name    = "private subnet-model hub VCN"
   dns_label       = "sub10102010521"
@@ -75,7 +75,7 @@ resource oci_core_subnet private-subnet-model-hub-VCN {
 
 resource oci_core_subnet public-subnet-model-hub-VCN {
   cidr_block     = "10.0.0.0/24"
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   dhcp_options_id = oci_core_default_dhcp_options.Default-DHCP-Options-for-model-hub-VCN.id
   display_name    = "public subnet-model hub VCN"
   dns_label       = "sub10102010520"
@@ -90,7 +90,7 @@ resource oci_core_subnet public-subnet-model-hub-VCN {
 }
 
 resource oci_core_route_table route-table-for-private-subnet-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "route table for private subnet-model hub VCN"
   vcn_id = oci_core_vcn.model-hub-VCN.id
   route_rules {
@@ -106,7 +106,7 @@ resource oci_core_route_table route-table-for-private-subnet-model-hub-VCN {
 }
 
 resource oci_core_default_route_table default-route-table-for-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "default route table for model hub VCN"
   manage_default_resource_id = oci_core_vcn.model-hub-VCN.default_route_table_id
   route_rules {
@@ -117,7 +117,7 @@ resource oci_core_default_route_table default-route-table-for-model-hub-VCN {
 }
 
 resource oci_core_security_list security-list-for-private-subnet-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "security list for private subnet-model hub VCN"
   egress_security_rules {
     destination      = "0.0.0.0/0"
@@ -175,7 +175,7 @@ resource oci_core_security_list security-list-for-private-subnet-model-hub-VCN {
 }
 
 resource oci_core_default_security_list Default-Security-List-for-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "Default Security List for model hub VCN"
   egress_security_rules {
     destination      = "0.0.0.0/0"
@@ -237,7 +237,7 @@ data "oci_core_services" "all_oci_services" {
 }
 
 resource oci_core_service_gateway Service-gateway-model-hub-VCN {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "Service gateway-model hub VCN"
   services {
     service_id = lookup(data.oci_core_services.all_oci_services[0].services[0], "id")

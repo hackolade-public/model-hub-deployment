@@ -7,7 +7,7 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource oci_kms_vault Stores-secrets-used-by-the-model-hub {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "Stores secrets used by the hub in the current compartment"
   vault_type = "DEFAULT"
 }
@@ -25,7 +25,7 @@ resource oci_kms_key HubEncryptionKey {
   depends_on = [
     time_sleep.wait_for_kms_vault_to_be_ready
   ]
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   desired_state = "ENABLED"
   display_name  = "HubEncryptionKey"
   is_auto_rotation_enabled = "false"

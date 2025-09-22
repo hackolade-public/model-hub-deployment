@@ -7,14 +7,14 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource oci_logging_log_group hckhub_logs {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "hckhub_logs"
   freeform_tags = {}
 }
 
 resource oci_logging_log model_hub_service_connector_logs {
   configuration {
-    compartment_id = oci_identity_compartment.modelhub_compartment.id
+    compartment_id = var.compartment_ocid
     source {
       category = "runlog"
       parameters = {
@@ -35,7 +35,7 @@ resource oci_logging_log model_hub_service_connector_logs {
 
 resource oci_logging_log model_hub_functions_logs {
   configuration {
-    compartment_id = oci_identity_compartment.modelhub_compartment.id
+    compartment_id = var.compartment_ocid
     source {
       category = "invoke"
       parameters = {}
@@ -54,7 +54,7 @@ resource oci_logging_log model_hub_functions_logs {
 
 resource oci_logging_log model_hub_api_execution {
   configuration {
-    compartment_id = oci_identity_compartment.modelhub_compartment.id
+    compartment_id = var.compartment_ocid
     source {
       category = "execution"
       parameters = {
@@ -76,7 +76,7 @@ resource oci_logging_log model_hub_api_execution {
 
 resource oci_logging_log model_hub_api_access {
   configuration {
-    compartment_id = oci_identity_compartment.modelhub_compartment.id
+    compartment_id = var.compartment_ocid
     source {
       category = "access"
       parameters = {

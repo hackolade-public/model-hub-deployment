@@ -8,7 +8,7 @@
  */
 resource oci_functions_application model-hub-sync {
   depends_on = [terraform_data.copy_docker_images]
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   config = {
     "GIT_PROVIDER_GITLAB_SERVER_HOST_DOMAIN_NAME" = var.gitlab_server_host_domain_name
     "HUB_DOMAIN_NAME"      = var.hub_domain_name

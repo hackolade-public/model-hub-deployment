@@ -7,9 +7,9 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource "oci_identity_domain" "modelhub_domain" {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   description = "Domain to regroup uses that can access the hub API"
-  display_name = var.compartment_name
+  display_name = data.oci_identity_compartment.modelhub_compartment.name
   home_region = var.region
   license_type = "free"
 

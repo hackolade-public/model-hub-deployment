@@ -7,7 +7,7 @@
  * the agreement/contract under which the software has been supplied.
  */
 resource oci_apigateway_gateway model-hub-gateway {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name  = "model-hub-gateway"
   endpoint_type = "PUBLIC"
   freeform_tags = {}
@@ -19,7 +19,7 @@ resource oci_apigateway_gateway model-hub-gateway {
 }
 
 resource oci_apigateway_deployment model-hub-api {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "model-hub-api"
   freeform_tags = {}
   gateway_id  = oci_apigateway_gateway.model-hub-gateway.id
@@ -90,7 +90,7 @@ resource oci_apigateway_deployment model-hub-api {
 }
 
 resource oci_apigateway_deployment model-hub-functions {
-  compartment_id = oci_identity_compartment.modelhub_compartment.id
+  compartment_id = var.compartment_ocid
   display_name = "model-hub-functions"
   freeform_tags = {}
   gateway_id  = oci_apigateway_gateway.model-hub-gateway.id
