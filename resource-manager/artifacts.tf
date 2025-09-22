@@ -6,6 +6,11 @@
  * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
  * the agreement/contract under which the software has been supplied.
  */
+
+locals {
+  repository_name_prefix = data.oci_identity_compartment.modelhub_compartment.name
+}
+
 resource oci_artifacts_container_configuration container_configuration {
   compartment_id                      = var.compartment_ocid
   is_repository_created_on_first_push = "false"
@@ -13,7 +18,7 @@ resource oci_artifacts_container_configuration container_configuration {
 
 resource oci_artifacts_container_repository model-hub-sync-apply-model-changes {
   compartment_id = var.compartment_ocid
-  display_name = "${data.oci_identity_compartment.modelhub_compartment.name}/apply-model-changes"
+  display_name = "${repository_name_prefix}/apply-model-changes"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -21,7 +26,7 @@ resource oci_artifacts_container_repository model-hub-sync-apply-model-changes {
 
 resource oci_artifacts_container_repository model-hub-sync-database-migration {
   compartment_id = var.compartment_ocid
-  display_name = "${data.oci_identity_compartment.modelhub_compartment.name}/database-migration"
+  display_name = "${repository_name_prefix}/database-migration"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -29,7 +34,7 @@ resource oci_artifacts_container_repository model-hub-sync-database-migration {
 
 resource oci_artifacts_container_repository model-hub-sync-sync {
   compartment_id = var.compartment_ocid
-  display_name = "${data.oci_identity_compartment.modelhub_compartment.name}/sync"
+  display_name = "${repository_name_prefix}/sync"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -37,7 +42,7 @@ resource oci_artifacts_container_repository model-hub-sync-sync {
 
 resource oci_artifacts_container_repository model-hub-sync-update-oci-functions {
   compartment_id = var.compartment_ocid
-  display_name = "${data.oci_identity_compartment.modelhub_compartment.name}/update-oci-functions"
+  display_name = "${repository_name_prefix}/update-oci-functions"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"

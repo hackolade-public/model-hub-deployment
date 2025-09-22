@@ -6,9 +6,18 @@
  * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
  * the agreement/contract under which the software has been supplied.
  */
+
+locals {
+  hub_db_name_prefix = regex_replace(lower(data.oci_identity_compartment.modelhub_compartment.name), "/[^a-z0-9]/", "")
+}
+
+locals {
+  hub_db_name = "${local.hub_db_name_prefix}hck"
+}
+
 data "oci_database_autonomous_databases" "existing_db" {
   compartment_id = var.compartment_ocid
-  display_name   = var.hub_db_name
+  display_name   = local.hub_db_name
 }
 
 resource oci_database_autonomous_database hckhub {
@@ -18,10 +27,10 @@ resource oci_database_autonomous_database hckhub {
   compute_count = var.autonomous_database_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? 1 : 2) : var.autonomous_database_ecpu_count
   compute_model = "ECPU"
   data_storage_size_in_gb = var.autonomous_database_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? "20" : "1024") : var.autonomous_database_storage
-  db_name = var.hub_db_name
+  db_name = local.hub_db_name
   db_version = "23ai"
   db_workload = "AJD"
-  display_name = var.hub_db_name
+  display_name = local.hub_db_name
   is_auto_scaling_enabled = "false"
   is_auto_scaling_for_storage_enabled = "false"
   is_dedicated = "false"

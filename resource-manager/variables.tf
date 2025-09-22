@@ -12,10 +12,6 @@ variable region {}
 variable oci_username {
   description = "Username of an OCI user that is going to be used to push docker images into OCI registry"
 }
-variable hub_db_name {
-  default = "hckhub"
-  description = "Name of the database that will be created"
-}
 
 variable autonomous_database_username {
   default = "hck_hub"
