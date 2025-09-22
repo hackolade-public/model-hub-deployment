@@ -13,6 +13,12 @@ variable oci_username {
   description = "Username of an OCI user that is going to be used to push docker images into OCI registry"
 }
 
+# Let's remove this variable and generate it
+variable hub_db_name {
+  default = "hckhub"
+  description = "Name of the database that will be created. The name must contain only letters and numbers, starting with a letter. 30 characters max. Spaces are not allowed"
+}
+
 variable autonomous_database_username {
   default = "hck_hub"
   description = "value of the database user that will be created"
