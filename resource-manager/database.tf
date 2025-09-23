@@ -38,7 +38,12 @@ locals {
 }
 
 resource "terraform_data" "create_new_schema" {
-  triggers_replace = [oci_database_autonomous_database.hckhub.id, var.hub_db_schema_password, var.hub_db_schema_username]
+  triggers_replace = [
+    oci_database_autonomous_database.hckhub.id,
+    var.hub_db_admin_password,
+    var.hub_db_schema_password,
+    var.hub_db_schema_username
+  ]
 
   provisioner "local-exec" {
     on_failure = fail
@@ -50,7 +55,7 @@ resource "terraform_data" "create_new_schema" {
       ORACLE_DB_CONNECTION = local.database_profiles["LOW"]
     }
 
-    command = "podman run --rm -e ORACLE_PASSWORD -e ORACLE_USER -e ORACLE_DB_CONNECTION -e NEW_ORACLE_USER hackoladepublic.azurecr.io/model-hub-sync/seed-first-user:split-passwords"
+    command = "podman run --rm -e ORACLE_PASSWORD -e ORACLE_USER -e ORACLE_DB_CONNECTION -e NEW_ORACLE_USER -e NEW_ORACLE_PASSWORD hackoladepublic.azurecr.io/model-hub-sync/seed-first-user:split-passwords"
   }
 }
 
