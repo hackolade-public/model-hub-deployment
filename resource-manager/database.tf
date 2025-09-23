@@ -38,7 +38,7 @@ locals {
 }
 
 resource "terraform_data" "create_new_schema" {
-  triggers_replace = [oci_database_autonomous_database.hckhub.id]
+  triggers_replace = [oci_database_autonomous_database.hckhub.id, var.hub_db_schema_password, var.hub_db_schema_username]
 
   provisioner "local-exec" {
     on_failure = fail
