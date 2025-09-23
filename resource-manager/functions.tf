@@ -17,7 +17,7 @@ resource oci_functions_application model-hub-sync {
     "OCI_USERNAME"         = format("%s/%s",data.oci_objectstorage_namespace.object_storage_namespace.namespace,var.oci_username)
     "ORACLE_DB_CONNECTION_NO_PARALELLISM" = lookup(local.database_profiles, "LOW") # sqitch fails when running with parallelism
     "ORACLE_DB_CONNECTION" = lookup(local.database_profiles, "HIGH")
-    "ORACLE_USER"          = var.hub_db_username
+    "ORACLE_USER"          = var.hub_db_schema_username
     "QUEUE_ENDPOINT"       = oci_queue_queue.gitFileChanges.messages_endpoint
   }
   display_name = "model-hub-sync"
