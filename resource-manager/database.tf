@@ -46,10 +46,11 @@ resource "terraform_data" "create_new_schema" {
       ORACLE_PASSWORD = var.hub_db_admin_password
       ORACLE_USER = "admin"
       NEW_ORACLE_USER = var.hub_db_schema_username
+      NEW_ORACLE_PASSWORD = var.hub_db_schema_password
       ORACLE_DB_CONNECTION = local.database_profiles["LOW"]
     }
 
-    command = "podman run --rm -e ORACLE_PASSWORD -e ORACLE_USER -e ORACLE_DB_CONNECTION -e NEW_ORACLE_USER hackoladepublic.azurecr.io/model-hub-sync/seed-first-user:develop"
+    command = "podman run --rm -e ORACLE_PASSWORD -e ORACLE_USER -e ORACLE_DB_CONNECTION -e NEW_ORACLE_USER hackoladepublic.azurecr.io/model-hub-sync/seed-first-user:split-passwords"
   }
 }
 
