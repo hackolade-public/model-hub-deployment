@@ -13,7 +13,6 @@ variable oci_username {
   description = "Username of an OCI user that is going to be used to push docker images into OCI registry"
 }
 
-# Let's remove this variable and generate it
 variable hub_db_name {
   default = "hckhub"
   description = "Name of the database that will be created. The name must contain only letters and numbers, starting with a letter. 30 characters max. Spaces are not allowed"
@@ -26,24 +25,23 @@ variable hub_db_name {
     error_message = "The hub_db_name value must contain only letters and numbers, starting with a letter."
   }
 }
-
-variable autonomous_database_username {
+variable hub_db_username {
   default = "hck_hub"
   description = "value of the database user that will be created"
 }
-variable autonomous_database_password {
+variable hub_db_password {
   sensitive = true
-  description = "password of the database. This password will be shared with the admin of the database and the one created by autonomous_database_username"
+  description = "password of the database. This password will be shared with the admin of the database and the one created by hub_db_username"
 }
-variable autonomous_database_ecpu_count {
+variable hub_db_ecpu_count {
   default = 0
   type = number
   description = "ECPU count for the database. If 0, then a free tier database will be created. Minimum starts at 2"
 }
-variable autonomous_database_storage {
+variable hub_db_storage {
   default = 20
   type = number
-  description = "Specify the storage you wish to make available to your database. Minimum starts at 20"
+  description = "Specify the storage size in GB you wish to make available to your database. Minimum starts at 20"
 }
 variable github_token {
   sensitive = true

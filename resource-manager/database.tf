@@ -13,12 +13,12 @@ data "oci_database_autonomous_databases" "existing_db" {
 }
 
 resource oci_database_autonomous_database hckhub {
-  admin_password = var.autonomous_database_password
+  admin_password = var.hub_db_password
   autonomous_maintenance_schedule_type = "REGULAR"
   compartment_id = var.compartment_ocid
-  compute_count = var.autonomous_database_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? 1 : 2) : var.autonomous_database_ecpu_count
+  compute_count = var.hub_db_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? 1 : 2) : var.hub_db_ecpu_count
   compute_model = "ECPU"
-  data_storage_size_in_gb = var.autonomous_database_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? "20" : "1024") : var.autonomous_database_storage
+  data_storage_size_in_gb = var.hub_db_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? "20" : "1024") : var.hub_db_storage
   db_name = var.hub_db_name
   db_version = "23ai"
   db_workload = "AJD"
@@ -26,7 +26,7 @@ resource oci_database_autonomous_database hckhub {
   is_auto_scaling_enabled = "false"
   is_auto_scaling_for_storage_enabled = "false"
   is_dedicated = "false"
-  is_free_tier = var.autonomous_database_ecpu_count == 0
+  is_free_tier = var.hub_db_ecpu_count == 0
   is_mtls_connection_required = "false"
   is_preview_version_with_service_terms_accepted = "false"
   license_model = "LICENSE_INCLUDED"
@@ -43,9 +43,9 @@ resource "terraform_data" "create_new_schema" {
   provisioner "local-exec" {
     on_failure = fail
     environment = {
-      ORACLE_PASSWORD = var.autonomous_database_password
+      ORACLE_PASSWORD = var.hub_db_password
       ORACLE_USER = "admin"
-      NEW_ORACLE_USER = var.autonomous_database_username
+      NEW_ORACLE_USER = var.hub_db_username
       ORACLE_DB_CONNECTION = local.database_profiles["LOW"]
     }
 
@@ -54,5 +54,5 @@ resource "terraform_data" "create_new_schema" {
 }
 
 output "OrdsEndpoint" {
-  value = format("%s%s", lookup(oci_database_autonomous_database.hckhub.connection_urls[0], "ords_url"), var.autonomous_database_username)
+  value = format("%s%s", lookup(oci_database_autonomous_database.hckhub.connection_urls[0], "ords_url"), var.hub_db_username)
 }

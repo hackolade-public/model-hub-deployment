@@ -16,7 +16,7 @@ resource oci_vault_secret oracle_password_secret {
   }
   secret_content {
     content_type = "BASE64"
-    content = base64encode(var.autonomous_database_password)
+    content = base64encode(var.hub_db_password)
   }
   secret_name = "ORACLE_PASSWORD"
   vault_id    = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
