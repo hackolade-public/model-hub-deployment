@@ -13,7 +13,7 @@ data "oci_database_autonomous_databases" "existing_db" {
 }
 
 resource oci_database_autonomous_database hckhub {
-  admin_password = var.hub_db_password
+  admin_password = var.hub_db_admin_password
   autonomous_maintenance_schedule_type = "REGULAR"
   compartment_id = var.compartment_ocid
   compute_count = var.hub_db_ecpu_count == 0 ? (length(data.oci_database_autonomous_databases.existing_db.autonomous_databases) > 0 ? 1 : 2) : var.hub_db_ecpu_count
@@ -38,21 +38,27 @@ locals {
 }
 
 resource "terraform_data" "create_new_schema" {
-  triggers_replace = [oci_database_autonomous_database.hckhub.id]
+  triggers_replace = [
+    oci_database_autonomous_database.hckhub.id,
+    var.hub_db_admin_password,
+    var.hub_db_schema_password,
+    var.hub_db_schema_username
+  ]
 
   provisioner "local-exec" {
     on_failure = fail
     environment = {
-      ORACLE_PASSWORD = var.hub_db_password
+      ORACLE_PASSWORD = var.hub_db_admin_password
       ORACLE_USER = "admin"
-      NEW_ORACLE_USER = var.hub_db_username
+      NEW_ORACLE_USER = var.hub_db_schema_username
+      NEW_ORACLE_PASSWORD = var.hub_db_schema_password
       ORACLE_DB_CONNECTION = local.database_profiles["LOW"]
     }
 
-    command = "podman run --rm -e ORACLE_PASSWORD -e ORACLE_USER -e ORACLE_DB_CONNECTION -e NEW_ORACLE_USER hackoladepublic.azurecr.io/model-hub-sync/seed-first-user:develop"
+    command = "podman run --rm -e ORACLE_PASSWORD -e ORACLE_USER -e ORACLE_DB_CONNECTION -e NEW_ORACLE_USER -e NEW_ORACLE_PASSWORD hackoladepublic.azurecr.io/model-hub-sync/seed-first-user:develop"
   }
 }
 
 output "OrdsEndpoint" {
-  value = format("%s%s", lookup(oci_database_autonomous_database.hckhub.connection_urls[0], "ords_url"), var.hub_db_username)
+  value = format("%s%s", lookup(oci_database_autonomous_database.hckhub.connection_urls[0], "ords_url"), var.hub_db_schema_username)
 }

@@ -25,13 +25,17 @@ variable hub_db_name {
     error_message = "The hub_db_name value must contain only letters and numbers, starting with a letter."
   }
 }
-variable hub_db_username {
-  default = "hck_hub"
-  description = "value of the database user that will be created"
-}
-variable hub_db_password {
+variable hub_db_admin_password {
   sensitive = true
-  description = "password of the database. This password will be shared with the admin of the database and the one created by hub_db_username"
+  description = "Password for the admin user of the database"
+}
+variable hub_db_schema_username {
+  default = "hck_hub"
+  description = "Name of the database schema/user that will be created. This schema will be used to store all your models"
+}
+variable hub_db_schema_password {
+  sensitive = true
+  description = "Password for the user described by hub_db_schema_username"
 }
 variable hub_db_ecpu_count {
   default = 0
