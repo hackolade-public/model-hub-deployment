@@ -47,47 +47,6 @@ variable hub_db_storage {
   type = number
   description = "Specify the storage size in GB you wish to make available to your database. Minimum starts at 20"
 }
-variable github_token {
-  sensitive = true
-  nullable = true
-  default = ""
-  description = "Github token used to download the model files from GitHub"
-}
-variable github_webhook_secret {
-  sensitive = true
-  nullable = true
-  default = ""
-  description = "Secret configured on the Github webhook page"
-}
-variable gitlab_token {
-  sensitive = true
-  nullable = true
-  default = ""
-  description = "Gitlab token used to download the model files from GitLab"
-}
-variable gitlab_webhook_secret {
-  sensitive = true
-  nullable = true
-  default = ""
-  description = "Secret configured on the GitLab webhook page"
-}
-variable gitlab_server_host_domain_name {
-  description = "Domain name for GitLab server"
-  nullable = true
-  default = ""
-}
-variable gitlab_server_token {
-  sensitive = true
-  nullable = true
-  default = ""
-  description = "Gitlab token used to download the model files from your GitLab server"
-}
-variable gitlab_server_webhook_secret {
-  sensitive = true
-  nullable = true
-  default = ""
-  description = "Secret configured on your GitLab server webhook page"
-}
 variable hub_domain_name {
   default = "<org>.hackolade.com"
   description = "DNS of the HUB portal"

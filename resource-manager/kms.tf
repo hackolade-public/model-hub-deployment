@@ -18,7 +18,7 @@ resource "time_sleep" "wait_for_kms_vault_to_be_ready" {
   depends_on = [
     oci_kms_vault.Stores-secrets-used-by-the-model-hub
   ]
-  create_duration = "45s"
+  create_duration = "1m"
 }
 
 resource oci_kms_key HubEncryptionKey {

@@ -48,6 +48,14 @@ resource oci_artifacts_container_repository model-hub-sync-update-oci-functions 
   is_public    = "false"
 }
 
+resource oci_artifacts_container_repository model-hub-sync-write-to-vault {
+  compartment_id = var.compartment_ocid
+  display_name = "${local.repository_name_prefix}/write-to-vault"
+  freeform_tags = {}
+  is_immutable = "false"
+  is_public    = "false"
+}
+
 # Wait a bit for the container repositories to be ready
 # If not, the terraform will fail because the container repositories are not found
 resource "time_sleep" "wait_for_artifacts_to_be_ready" {
@@ -56,6 +64,7 @@ resource "time_sleep" "wait_for_artifacts_to_be_ready" {
     oci_artifacts_container_repository.model-hub-sync-database-migration,
     oci_artifacts_container_repository.model-hub-sync-sync,
     oci_artifacts_container_repository.model-hub-sync-update-oci-functions,
+    oci_artifacts_container_repository.model-hub-sync-write-to-vault,
     oci_identity_auth_token.auth_token_registry
   ]
   create_duration = "150s"
@@ -68,6 +77,7 @@ resource "terraform_data" "copy_docker_images" {
     oci_artifacts_container_repository.model-hub-sync-database-migration.id,
     oci_artifacts_container_repository.model-hub-sync-sync.id,
     oci_artifacts_container_repository.model-hub-sync-update-oci-functions.id,
+    oci_artifacts_container_repository.model-hub-sync-write-to-vault.id,
   ]
 
   provisioner "local-exec" {

@@ -32,17 +32,18 @@ resource "oci_identity_domains_app" "modelhub_portal_authentication" {
   }
   display_name = "modelhub-portal-authentication"
   idcs_endpoint = oci_identity_domain.modelhub_domain.url
-  schemas = ["urn:ietf:params:scim:schemas:oracle:idcs:App"]
+  schemas = [
+    "urn:ietf:params:scim:schemas:oracle:idcs:App",
+    "urn:ietf:params:scim:schemas:oracle:idcs:extension:OCITags"
+  ]
 
+  login_page_url = ""
   access_token_expiry = 3600
   active = true
   all_url_schemes_allowed = true
   allow_access_control = true
   allow_offline = true
   allowed_grants = ["authorization_code"]
-  allowed_scopes {
-      fqs = "hub/hck_hub.read"
-  }
   attribute_sets = ["all"]
   audience = "hub/"
   bypass_consent = true
@@ -53,13 +54,6 @@ resource "oci_identity_domains_app" "modelhub_portal_authentication" {
     format("https://%s/hub", var.hub_domain_name)
   ]
   refresh_token_expiry = 604800
-  scopes {
-      value = "hck_hub.read"
-
-      description = "Scope to access read only endpoints"
-      display_name = "hck_hub.read"
-      requires_consent = false
-  }
   show_in_my_apps = false
 }
 

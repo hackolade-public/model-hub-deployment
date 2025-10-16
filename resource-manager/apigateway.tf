@@ -6,6 +6,13 @@
  * IntegrIT S.A. or in accordance with the terms and conditions stipulated in
  * the agreement/contract under which the software has been supplied.
  */
+
+locals {
+  audience = replace(oci_identity_domain.modelhub_domain.url, ":443", "")
+  jwks_uri = format("%s/admin/v1/SigningCert/jwk", oci_identity_domain.modelhub_domain.url)
+  issuer = "https://identity.oraclecloud.com/"
+}
+
 resource oci_apigateway_gateway model-hub-gateway {
   compartment_id = var.compartment_ocid
   display_name  = "model-hub-gateway"
@@ -23,7 +30,7 @@ resource oci_apigateway_deployment model-hub-api {
   display_name = "model-hub-api"
   freeform_tags = {}
   gateway_id  = oci_apigateway_gateway.model-hub-gateway.id
-  path_prefix = "/gateway"
+  path_prefix = "/gateway/public"
   specification {
     logging_policies {
       execution_log {
@@ -94,7 +101,7 @@ resource oci_apigateway_deployment model-hub-functions {
   display_name = "model-hub-functions"
   freeform_tags = {}
   gateway_id  = oci_apigateway_gateway.model-hub-gateway.id
-  path_prefix = "/functions"
+  path_prefix = "/gateway/devops"
   specification {
     logging_policies {
       execution_log {
@@ -112,13 +119,13 @@ resource oci_apigateway_deployment model-hub-functions {
       }
       authentication {
         type = "JWT_AUTHENTICATION"
-        audiences = ["hub/"]
+        audiences = [local.audience]
         is_anonymous_access_allowed = false
-        issuers = ["https://identity.oraclecloud.com/"]
+        issuers = [local.issuer]
         public_keys {
             type = "REMOTE_JWKS"
             max_cache_duration_in_hours = 1
-            uri = format("%s/admin/v1/SigningCert/jwk", oci_identity_domain.modelhub_domain.url)
+            uri = local.jwks_uri
         }
         token_auth_scheme = "Bearer"
         token_header = "Authorization"
@@ -138,7 +145,12 @@ resource oci_apigateway_deployment model-hub-functions {
         "POST",
       ]
       path = "/update-oci-functions"
-      request_policies {}
+      request_policies {
+        authorization {
+          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
+          type = "ANY_OF"
+        }
+      }
       response_policies {}
     }
     routes {
@@ -156,6 +168,66 @@ resource oci_apigateway_deployment model-hub-functions {
       ]
       path = "/run-db-migrations"
       request_policies {}
+      response_policies {}
+    }
+  }
+}
+
+resource oci_apigateway_deployment model-hub-admin-api {
+  compartment_id = var.compartment_ocid
+  display_name = "model-hub-admin-api"
+  freeform_tags = {}
+  gateway_id  = oci_apigateway_gateway.model-hub-gateway.id
+  path_prefix = "/gateway/admin"
+  specification {
+    logging_policies {
+      execution_log {
+        log_level = "INFO"
+      }
+    }
+    request_policies {
+      mutual_tls {
+        allowed_sans = []
+        is_verified_certificate_required = "false"
+      }
+      rate_limiting {
+        rate_in_requests_per_second = 50
+        rate_key = "CLIENT_IP"
+      }
+      authentication {
+        type = "JWT_AUTHENTICATION"
+        audiences = [local.audience]
+        is_anonymous_access_allowed = false
+        issuers = [local.issuer]
+        public_keys {
+            type = "REMOTE_JWKS"
+            max_cache_duration_in_hours = 1
+            uri = local.jwks_uri
+        }
+        token_auth_scheme = "Bearer"
+        token_header = "Authorization"
+      }
+    }
+    routes {
+      backend {
+        function_id = oci_functions_function.write-to-vault.id
+        type = "ORACLE_FUNCTIONS_BACKEND"
+      }
+      logging_policies {
+        execution_log {
+          log_level = ""
+        }
+      }
+      methods = [
+        "POST",
+      ]
+      path = "/write-secrets"
+      request_policies {
+        authorization {
+          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
+          type = "ANY_OF"
+        }
+      }
       response_policies {}
     }
   }
