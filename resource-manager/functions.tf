@@ -54,15 +54,15 @@ resource oci_functions_function apply-model-changes {
   }
 }
 
-resource oci_functions_function write-to-vault {
+resource oci_functions_function vault-management {
   depends_on = [terraform_data.copy_docker_images]
   application_id = oci_functions_application.model-hub-sync.id
   config = {
   }
-  display_name = "write-to-vault"
+  display_name = "vault-management"
   freeform_tags = {
   }
-  image         = format("%s.ocir.io/%s/%s:develop", lower(data.oci_identity_regions.region.regions[0]["key"]), data.oci_objectstorage_namespace.object_storage_namespace.namespace,oci_artifacts_container_repository.model-hub-sync-write-to-vault.display_name)
+  image         = format("%s.ocir.io/%s/%s:develop", lower(data.oci_identity_regions.region.regions[0]["key"]), data.oci_objectstorage_namespace.object_storage_namespace.namespace,oci_artifacts_container_repository.model-hub-sync-vault-management.display_name)
   memory_in_mbs = "256"
   provisioned_concurrency_config {
     strategy = "NONE"
@@ -106,6 +106,44 @@ resource oci_functions_function sync {
     strategy = "NONE"
   }
   timeout_in_seconds = "300"
+  trace_config {
+    is_enabled = "false"
+  }
+}
+
+resource oci_functions_function sync-all {
+  depends_on = [terraform_data.copy_docker_images]
+  application_id = oci_functions_application.model-hub-sync.id
+  config = {
+  }
+  display_name = "sync-all"
+  freeform_tags = {
+  }
+  image         = format("%s.ocir.io/%s/%s:develop", lower(data.oci_identity_regions.region.regions[0]["key"]), data.oci_objectstorage_namespace.object_storage_namespace.namespace,oci_artifacts_container_repository.model-hub-sync-sync-all.display_name)
+  memory_in_mbs = "128"
+  provisioned_concurrency_config {
+    strategy = "NONE"
+  }
+  timeout_in_seconds = "300"
+  trace_config {
+    is_enabled = "false"
+  }
+}
+
+resource oci_functions_function git-providers-api {
+  depends_on = [terraform_data.copy_docker_images]
+  application_id = oci_functions_application.model-hub-sync.id
+  config = {
+  }
+  display_name = "git-providers-api"
+  freeform_tags = {
+  }
+  image         = format("%s.ocir.io/%s/%s:develop", lower(data.oci_identity_regions.region.regions[0]["key"]), data.oci_objectstorage_namespace.object_storage_namespace.namespace,oci_artifacts_container_repository.model-hub-sync-git-providers-api.display_name)
+  memory_in_mbs = "128"
+  provisioned_concurrency_config {
+    strategy = "NONE"
+  }
+  timeout_in_seconds = "60"
   trace_config {
     is_enabled = "false"
   }

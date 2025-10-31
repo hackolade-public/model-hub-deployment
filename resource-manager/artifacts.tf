@@ -40,6 +40,14 @@ resource oci_artifacts_container_repository model-hub-sync-sync {
   is_public    = "false"
 }
 
+resource oci_artifacts_container_repository model-hub-sync-sync-all {
+  compartment_id = var.compartment_ocid
+  display_name = "${local.repository_name_prefix}/sync-all"
+  freeform_tags = {}
+  is_immutable = "false"
+  is_public    = "false"
+}
+
 resource oci_artifacts_container_repository model-hub-sync-update-oci-functions {
   compartment_id = var.compartment_ocid
   display_name = "${local.repository_name_prefix}/update-oci-functions"
@@ -48,9 +56,17 @@ resource oci_artifacts_container_repository model-hub-sync-update-oci-functions 
   is_public    = "false"
 }
 
-resource oci_artifacts_container_repository model-hub-sync-write-to-vault {
+resource oci_artifacts_container_repository model-hub-sync-vault-management {
   compartment_id = var.compartment_ocid
-  display_name = "${local.repository_name_prefix}/write-to-vault"
+  display_name = "${local.repository_name_prefix}/vault-management"
+  freeform_tags = {}
+  is_immutable = "false"
+  is_public    = "false"
+}
+
+resource oci_artifacts_container_repository model-hub-sync-git-providers-api {
+  compartment_id = var.compartment_ocid
+  display_name = "${local.repository_name_prefix}/git-providers-api"
   freeform_tags = {}
   is_immutable = "false"
   is_public    = "false"
@@ -62,9 +78,11 @@ resource "time_sleep" "wait_for_artifacts_to_be_ready" {
   depends_on = [
     oci_artifacts_container_repository.model-hub-sync-apply-model-changes,
     oci_artifacts_container_repository.model-hub-sync-database-migration,
+    oci_artifacts_container_repository.model-hub-sync-git-providers-api,
+    oci_artifacts_container_repository.model-hub-sync-sync-all,
     oci_artifacts_container_repository.model-hub-sync-sync,
     oci_artifacts_container_repository.model-hub-sync-update-oci-functions,
-    oci_artifacts_container_repository.model-hub-sync-write-to-vault,
+    oci_artifacts_container_repository.model-hub-sync-vault-management,
     oci_identity_auth_token.auth_token_registry
   ]
   create_duration = "150s"
@@ -75,9 +93,11 @@ resource "terraform_data" "copy_docker_images" {
   triggers_replace = [
     oci_artifacts_container_repository.model-hub-sync-apply-model-changes.id,
     oci_artifacts_container_repository.model-hub-sync-database-migration.id,
+    oci_artifacts_container_repository.model-hub-sync-git-providers-api.id,
+    oci_artifacts_container_repository.model-hub-sync-sync-all.id,
     oci_artifacts_container_repository.model-hub-sync-sync.id,
     oci_artifacts_container_repository.model-hub-sync-update-oci-functions.id,
-    oci_artifacts_container_repository.model-hub-sync-write-to-vault.id,
+    oci_artifacts_container_repository.model-hub-sync-vault-management.id,
   ]
 
   provisioner "local-exec" {

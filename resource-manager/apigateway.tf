@@ -210,7 +210,7 @@ resource oci_apigateway_deployment model-hub-admin-api {
     }
     routes {
       backend {
-        function_id = oci_functions_function.write-to-vault.id
+        function_id = oci_functions_function.vault-management.id
         type = "ORACLE_FUNCTIONS_BACKEND"
       }
       logging_policies {
@@ -221,7 +221,51 @@ resource oci_apigateway_deployment model-hub-admin-api {
       methods = [
         "POST",
       ]
-      path = "/write-secrets"
+      path = "/manage-secrets"
+      request_policies {
+        authorization {
+          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
+          type = "ANY_OF"
+        }
+      }
+      response_policies {}
+    }
+    routes {
+      backend {
+        function_id = oci_functions_function.git-providers-api.id
+        type = "ORACLE_FUNCTIONS_BACKEND"
+      }
+      logging_policies {
+        execution_log {
+          log_level = ""
+        }
+      }
+      methods = [
+        "GET",
+      ]
+      path = "/git-providers"
+      request_policies {
+        authorization {
+          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
+          type = "ANY_OF"
+        }
+      }
+      response_policies {}
+    }
+    routes {
+      backend {
+        function_id = oci_functions_function.sync-all.id
+        type = "ORACLE_FUNCTIONS_BACKEND"
+      }
+      logging_policies {
+        execution_log {
+          log_level = ""
+        }
+      }
+      methods = [
+        "POST",
+      ]
+      path = "/sync-all"
       request_policies {
         authorization {
           allowed_scope = ["urn:opc:idm:t.namedappadmin"]

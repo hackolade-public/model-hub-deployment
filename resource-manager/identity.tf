@@ -34,12 +34,12 @@ resource oci_identity_dynamic_group hck-hub-functions {
   name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
 }
 
-resource oci_identity_dynamic_group hck-hub-functions-write-to-vault {
+resource oci_identity_dynamic_group hck-hub-functions-vault-management {
   compartment_id = var.tenancy_ocid
-  description = "Dynamic group for functions that can write to vault"
+  description = "Dynamic group for functions that can manage vault"
   freeform_tags = {}
-  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.id = '${oci_functions_function.write-to-vault.id}'}}"
-  name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-write-to-vault"
+  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.id = '${oci_functions_function.vault-management.id}'}}"
+  name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management"
 }
 
 resource oci_identity_policy hck-hub-functions {
@@ -57,7 +57,7 @@ resource oci_identity_policy hck-hub-functions {
     "allow any-user to use functions-family in compartment ${data.oci_identity_compartment.modelhub_compartment.name} where ALL {request.principal.type= 'ApiGateway', request.resource.compartment.id = '${var.compartment_ocid}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to read secret-family in compartment id ${var.compartment_ocid}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to read vaults in compartment id ${var.compartment_ocid}",
-    "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-write-to-vault to manage secret-family in compartment id ${var.compartment_ocid} where any {target.secret.id = '${oci_vault_secret.gitlab_configuration_secret.id}', target.secret.id = '${oci_vault_secret.github_configuration_secret.id}'}",
+    "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management to manage secret-family in compartment id ${var.compartment_ocid} where any {target.secret.id = '${oci_vault_secret.gitlab_configuration_secret.id}', target.secret.id = '${oci_vault_secret.github_configuration_secret.id}', target.secret.id = '${oci_vault_secret.azuredevops_configuration_secret.id}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to inspect compartments in compartment id ${var.compartment_ocid}"
   ]
 }

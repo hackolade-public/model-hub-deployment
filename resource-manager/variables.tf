@@ -14,7 +14,6 @@ variable oci_username {
 }
 
 variable hub_db_name {
-  default = "hckhub"
   description = "Name of the database that will be created. The name must contain only letters and numbers, starting with a letter. 30 characters max. Spaces are not allowed"
   validation {
     condition     = length(var.hub_db_name) <= 30
@@ -30,7 +29,6 @@ variable hub_db_admin_password {
   description = "Password for the admin user of the database"
 }
 variable hub_db_schema_username {
-  default = "hck_hub"
   description = "Name of the database schema/user that will be created. This schema will be used to store all your models"
 }
 variable hub_db_schema_password {
@@ -48,6 +46,5 @@ variable hub_db_storage {
   description = "Specify the storage size in GB you wish to make available to your database. Minimum starts at 20"
 }
 variable hub_domain_name {
-  default = "<org>.hackolade.com"
   description = "DNS of the HUB portal"
 }
