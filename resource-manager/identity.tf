@@ -42,11 +42,8 @@ resource oci_identity_dynamic_group hck-hub-functions-vault-management {
   name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management"
 }
 
-resource oci_identity_policy hck-hub-functions {
-  compartment_id = var.compartment_ocid
-  description = "Give functions access to other components"
-  name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
-  statements = [
+locals {
+  hck_hub_functions_policy_statements = [
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to use queues in compartment ${data.oci_identity_compartment.modelhub_compartment.name}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to {QUEUE_READ, QUEUE_CONSUME} in compartment id ${var.compartment_ocid} where all {request.principal.type='serviceconnector', target.queue.id='${oci_queue_queue.gitFileChanges.id}', request.principal.compartment.id='${var.compartment_ocid}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to use fn-function in compartment id ${var.compartment_ocid} where all {request.principal.type='serviceconnector', request.principal.compartment.id='${var.compartment_ocid}'}",
@@ -62,13 +59,20 @@ resource oci_identity_policy hck-hub-functions {
   ]
 }
 
-data oci_identity_policies hck-hub-functions-policy {
-    compartment_id = var.compartment_ocid
-    name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
-    state = "ACTIVE"
+# Hash the statements - when statements change, this hash changes, triggering replacement
+resource terraform_data "policy_statements_hash" {
+  input = sha256(jsonencode(local.hck_hub_functions_policy_statements))
 }
 
-output "hck-hub-functions-policy-statements" {
-  value = data.oci_identity_policies.hck-hub-functions-policy.policies[0].statements
-  description = "Policy statements for hck-hub-functions-policy"
+resource oci_identity_policy hck-hub-functions {
+  compartment_id = var.compartment_ocid
+  description = "Give functions access to other components"
+  name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
+  statements = local.hck_hub_functions_policy_statements
+
+  lifecycle {
+    replace_triggered_by = [
+      terraform_data.policy_statements_hash
+    ]
+  }
 }
