@@ -57,18 +57,7 @@ resource oci_identity_policy hck-hub-functions {
     "allow any-user to use functions-family in compartment ${data.oci_identity_compartment.modelhub_compartment.name} where ALL {request.principal.type= 'ApiGateway', request.resource.compartment.id = '${var.compartment_ocid}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to read secret-family in compartment id ${var.compartment_ocid}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to read vaults in compartment id ${var.compartment_ocid}",
-    "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management to manage secret-family in compartment id ${var.compartment_ocid} where any {target.secret.id = '${oci_vault_secret.gitlab_configuration_secret.id}', target.secret.id = '${oci_vault_secret.github_configuration_secret.id}', target.secret.id = '${oci_vault_secret.azuredevops_configuration_secret.id}'}",
+    "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management to manage secret-family in compartment id ${var.compartment_ocid}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to inspect compartments in compartment id ${var.compartment_ocid}"
   ]
-}
-
-data oci_identity_policies hck-hub-functions-policy {
-    compartment_id = var.compartment_ocid
-    name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
-    state = "ACTIVE"
-}
-
-output "hck-hub-functions-policy-statements" {
-  value = data.oci_identity_policies.hck-hub-functions-policy.policies[0].statements
-  description = "Policy statements for hck-hub-functions-policy"
 }
