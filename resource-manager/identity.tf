@@ -42,8 +42,11 @@ resource oci_identity_dynamic_group hck-hub-functions-vault-management {
   name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management"
 }
 
-locals {
-  hck_hub_functions_policy_statements = [
+resource oci_identity_policy hck-hub-functions {
+  compartment_id = var.compartment_ocid
+  description = "Give functions access to other components"
+  name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
+  statements = [
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to use queues in compartment ${data.oci_identity_compartment.modelhub_compartment.name}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to {QUEUE_READ, QUEUE_CONSUME} in compartment id ${var.compartment_ocid} where all {request.principal.type='serviceconnector', target.queue.id='${oci_queue_queue.gitFileChanges.id}', request.principal.compartment.id='${var.compartment_ocid}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to use fn-function in compartment id ${var.compartment_ocid} where all {request.principal.type='serviceconnector', request.principal.compartment.id='${var.compartment_ocid}'}",
@@ -57,22 +60,7 @@ locals {
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management to manage secret-family in compartment id ${var.compartment_ocid} where any {target.secret.id = '${oci_vault_secret.gitlab_configuration_secret.id}', target.secret.id = '${oci_vault_secret.github_configuration_secret.id}', target.secret.id = '${oci_vault_secret.azuredevops_configuration_secret.id}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to inspect compartments in compartment id ${var.compartment_ocid}"
   ]
-}
-
-# Hash the statements - when statements change, this hash changes, triggering replacement
-resource terraform_data "policy_statements_hash" {
-  input = sha256(jsonencode(local.hck_hub_functions_policy_statements))
-}
-
-resource oci_identity_policy hck-hub-functions {
-  compartment_id = var.compartment_ocid
-  description = "Give functions access to other components"
-  name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
-  statements = local.hck_hub_functions_policy_statements
-
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.policy_statements_hash
-    ]
+  freeform_tags = {
+    "UpdatedAt" = timestamp()
   }
 }
