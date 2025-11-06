@@ -26,8 +26,27 @@ data "oci_identity_compartment" "modelhub_compartment" {
   id = var.compartment_ocid
 }
 
-locals {
-  hck_hub_functions_policy_statements = [
+resource oci_identity_dynamic_group hck-hub-functions {
+  compartment_id = var.tenancy_ocid
+  description = "Dynamic group to give functions access to other OCI components"
+  freeform_tags = {}
+  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.compartment.id = '${var.compartment_ocid}'},All {resource.type = 'serviceconnector',  resource.compartment.id = '${var.compartment_ocid}'}, ALL {resource.type='resourceschedule',  resource.compartment.id = '${var.compartment_ocid}'}}"
+  name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
+}
+
+resource oci_identity_dynamic_group hck-hub-functions-vault-management {
+  compartment_id = var.tenancy_ocid
+  description = "Dynamic group for functions that can manage vault"
+  freeform_tags = {}
+  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.id = '${oci_functions_function.vault-management.id}'}}"
+  name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management"
+}
+
+resource oci_identity_policy hck-hub-functions {
+  compartment_id = var.compartment_ocid
+  description = "Give functions access to other components"
+  name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
+  statements = [
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to use queues in compartment ${data.oci_identity_compartment.modelhub_compartment.name}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to {QUEUE_READ, QUEUE_CONSUME} in compartment id ${var.compartment_ocid} where all {request.principal.type='serviceconnector', target.queue.id='${oci_queue_queue.gitFileChanges.id}', request.principal.compartment.id='${var.compartment_ocid}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to use fn-function in compartment id ${var.compartment_ocid} where all {request.principal.type='serviceconnector', request.principal.compartment.id='${var.compartment_ocid}'}",
@@ -38,54 +57,7 @@ locals {
     "allow any-user to use functions-family in compartment ${data.oci_identity_compartment.modelhub_compartment.name} where ALL {request.principal.type= 'ApiGateway', request.resource.compartment.id = '${var.compartment_ocid}'}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to read secret-family in compartment id ${var.compartment_ocid}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to read vaults in compartment id ${var.compartment_ocid}",
-    "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management to manage secret-family in compartment id ${var.compartment_ocid} where any {target.secret.id = '${oci_vault_secret.gitlab_configuration_secret.id}', target.secret.id = '${oci_vault_secret.github_configuration_secret.id}', target.secret.id = '${oci_vault_secret.azuredevops_configuration_secret.id}'}",
+    "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management to manage secret-family in compartment id ${var.compartment_ocid}",
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to inspect compartments in compartment id ${var.compartment_ocid}"
   ]
-}
-
-resource terraform_data "policy_statements_hash" {
-  input = sha256(jsonencode(local.hck_hub_functions_policy_statements))
-}
-
-resource oci_identity_dynamic_group hck-hub-functions {
-  compartment_id = var.tenancy_ocid
-  description = "Dynamic group to give functions access to other OCI components"
-  freeform_tags = {
-    "PolicyVersion" = terraform_data.policy_statements_hash.output
-  }
-  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.compartment.id = '${var.compartment_ocid}'},All {resource.type = 'serviceconnector',  resource.compartment.id = '${var.compartment_ocid}'}, ALL {resource.type='resourceschedule',  resource.compartment.id = '${var.compartment_ocid}'}}"
-  name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
-}
-
-resource oci_identity_dynamic_group hck-hub-functions-vault-management {
-  compartment_id = var.tenancy_ocid
-  description = "Dynamic group for functions that can manage vault"
-  freeform_tags = {
-    "PolicyVersion" = terraform_data.policy_statements_hash.output
-  }
-  matching_rule = "Any {All {resource.type = 'fnfunc',  resource.id = '${oci_functions_function.vault-management.id}'}}"
-  name          = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions-vault-management"
-
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.policy_statements_hash
-    ]
-  }
-}
-
-resource oci_identity_policy hck-hub-functions {
-  compartment_id = var.compartment_ocid
-  description = "Give functions access to other components"
-  name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
-  statements = local.hck_hub_functions_policy_statements
-  freeform_tags = {
-    "UpdatedAt" = timestamp()
-    "PolicyVersion" = terraform_data.policy_statements_hash.output
-  }
-
-  lifecycle {
-    replace_triggered_by = [
-      terraform_data.policy_statements_hash
-    ]
-  }
 }
