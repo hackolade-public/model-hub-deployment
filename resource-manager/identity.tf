@@ -61,3 +61,14 @@ resource oci_identity_policy hck-hub-functions {
     "allow dynamic-group ${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions to inspect compartments in compartment id ${var.compartment_ocid}"
   ]
 }
+
+data oci_identity_policies hck-hub-functions-policy {
+    compartment_id = var.compartment_ocid
+    name = "${data.oci_identity_compartment.modelhub_compartment.name}-hck-hub-functions"
+    state = "ACTIVE"
+}
+
+output "hck-hub-functions-policy-statements" {
+  value = data.oci_identity_policies.hck-hub-functions-policy.policies[0].statements
+  description = "Policy statements for hck-hub-functions-policy"
+}
