@@ -241,7 +241,7 @@ resource oci_apigateway_deployment model-hub-admin-api {
         }
       }
       methods = [
-        "GET",
+        "POST",
       ]
       path = "/git-providers"
       request_policies {
