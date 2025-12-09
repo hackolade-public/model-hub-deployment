@@ -117,3 +117,23 @@ resource oci_vault_secret bitbucket_configuration_secret {
     content      = base64encode("[]")
   }
 }
+
+resource oci_vault_secret bitbucket_datacenter_configuration_secret {
+  compartment_id = var.compartment_ocid
+  description = "Configuration need to sync models from Bitbucket Data Center"
+  key_id = oci_kms_key.HubEncryptionKey.id
+  secret_name = "BITBUCKET_DATACENTER_CONFIGURATION"
+  vault_id    = oci_kms_vault.Stores-secrets-used-by-the-model-hub.id
+
+  lifecycle {
+    create_before_destroy = true
+    ignore_changes = [
+      secret_content,
+    ]
+  }
+
+  secret_content {
+    content_type = "BASE64"
+    content      = base64encode("[]")
+  }
+}
