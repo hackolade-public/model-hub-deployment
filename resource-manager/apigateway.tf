@@ -11,6 +11,32 @@ locals {
   audience = replace(oci_identity_domain.modelhub_domain.url, ":443", "")
   jwks_uri = format("%s/admin/v1/SigningCert/jwk", oci_identity_domain.modelhub_domain.url)
   issuer = "https://identity.oraclecloud.com/"
+  admin_authorization = {
+    allowed_scope = ["urn:opc:idm:t.namedappadmin"]
+    type = "ANY_OF"
+  }
+  admin_routes = {
+    "manage-secrets" = {
+      function_id = oci_functions_function.vault-management.id
+      path = "/manage-secrets"
+    }
+    "git-providers" = {
+      function_id = oci_functions_function.git-providers-api.id
+      path = "/git-providers"
+    }
+    "sync-all" = {
+      function_id = oci_functions_function.sync-all.id
+      path = "/sync-all"
+    }
+    "update-oci-functions" = {
+      function_id = oci_functions_function.update-oci-functions.id
+      path = "/update-oci-functions"
+    }
+    "run-db-migrations" = {
+      function_id = oci_functions_function.database-migration.id
+      path = "/run-db-migrations"
+    }
+  }
 }
 
 resource oci_apigateway_gateway model-hub-gateway {
@@ -96,83 +122,6 @@ resource oci_apigateway_deployment model-hub-api {
   }
 }
 
-resource oci_apigateway_deployment model-hub-functions {
-  compartment_id = var.compartment_ocid
-  display_name = "model-hub-functions"
-  freeform_tags = {}
-  gateway_id  = oci_apigateway_gateway.model-hub-gateway.id
-  path_prefix = "/gateway/devops"
-  specification {
-    logging_policies {
-      execution_log {
-        log_level = "INFO"
-      }
-    }
-    request_policies {
-      mutual_tls {
-        allowed_sans = []
-        is_verified_certificate_required = "false"
-      }
-      rate_limiting {
-        rate_in_requests_per_second = 50
-        rate_key = "CLIENT_IP"
-      }
-      authentication {
-        type = "JWT_AUTHENTICATION"
-        audiences = [local.audience]
-        is_anonymous_access_allowed = false
-        issuers = [local.issuer]
-        public_keys {
-            type = "REMOTE_JWKS"
-            max_cache_duration_in_hours = 1
-            uri = local.jwks_uri
-        }
-        token_auth_scheme = "Bearer"
-        token_header = "Authorization"
-      }
-    }
-    routes {
-      backend {
-        function_id = oci_functions_function.update-oci-functions.id
-        type = "ORACLE_FUNCTIONS_BACKEND"
-      }
-      logging_policies {
-        execution_log {
-          log_level = ""
-        }
-      }
-      methods = [
-        "POST",
-      ]
-      path = "/update-oci-functions"
-      request_policies {
-        authorization {
-          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
-          type = "ANY_OF"
-        }
-      }
-      response_policies {}
-    }
-    routes {
-      backend {
-        function_id = oci_functions_function.database-migration.id
-        type = "ORACLE_FUNCTIONS_BACKEND"
-      }
-      logging_policies {
-        execution_log {
-          log_level = ""
-        }
-      }
-      methods = [
-        "POST",
-      ]
-      path = "/run-db-migrations"
-      request_policies {}
-      response_policies {}
-    }
-  }
-}
-
 resource oci_apigateway_deployment model-hub-admin-api {
   compartment_id = var.compartment_ocid
   display_name = "model-hub-admin-api"
@@ -208,71 +157,30 @@ resource oci_apigateway_deployment model-hub-admin-api {
         token_header = "Authorization"
       }
     }
-    routes {
-      backend {
-        function_id = oci_functions_function.vault-management.id
-        type = "ORACLE_FUNCTIONS_BACKEND"
-      }
-      logging_policies {
-        execution_log {
-          log_level = ""
+    dynamic "routes" {
+      for_each = local.admin_routes
+      content {
+        backend {
+          function_id = routes.value.function_id
+          type = "ORACLE_FUNCTIONS_BACKEND"
         }
-      }
-      methods = [
-        "POST",
-      ]
-      path = "/manage-secrets"
-      request_policies {
-        authorization {
-          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
-          type = "ANY_OF"
+        logging_policies {
+          execution_log {
+            log_level = ""
+          }
         }
-      }
-      response_policies {}
-    }
-    routes {
-      backend {
-        function_id = oci_functions_function.git-providers-api.id
-        type = "ORACLE_FUNCTIONS_BACKEND"
-      }
-      logging_policies {
-        execution_log {
-          log_level = ""
+        methods = [
+          "POST",
+        ]
+        path = routes.value.path
+        request_policies {
+          authorization {
+            allowed_scope = local.admin_authorization.allowed_scope
+            type = local.admin_authorization.type
+          }
         }
+        response_policies {}
       }
-      methods = [
-        "POST",
-      ]
-      path = "/git-providers"
-      request_policies {
-        authorization {
-          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
-          type = "ANY_OF"
-        }
-      }
-      response_policies {}
-    }
-    routes {
-      backend {
-        function_id = oci_functions_function.sync-all.id
-        type = "ORACLE_FUNCTIONS_BACKEND"
-      }
-      logging_policies {
-        execution_log {
-          log_level = ""
-        }
-      }
-      methods = [
-        "POST",
-      ]
-      path = "/sync-all"
-      request_policies {
-        authorization {
-          allowed_scope = ["urn:opc:idm:t.namedappadmin"]
-          type = "ANY_OF"
-        }
-      }
-      response_policies {}
     }
   }
 }
