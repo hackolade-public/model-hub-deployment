@@ -87,30 +87,3 @@ resource "time_sleep" "wait_for_artifacts_to_be_ready" {
   ]
   create_duration = "150s"
 }
-
-resource "terraform_data" "copy_docker_images" {
-  depends_on = [time_sleep.wait_for_artifacts_to_be_ready]
-  triggers_replace = [
-    oci_artifacts_container_repository.model-hub-sync-apply-model-changes.id,
-    oci_artifacts_container_repository.model-hub-sync-database-migration.id,
-    oci_artifacts_container_repository.model-hub-sync-git-providers-api.id,
-    oci_artifacts_container_repository.model-hub-sync-sync-all.id,
-    oci_artifacts_container_repository.model-hub-sync-sync.id,
-    oci_artifacts_container_repository.model-hub-sync-update-oci-functions.id,
-    oci_artifacts_container_repository.model-hub-sync-vault-management.id,
-  ]
-
-  provisioner "local-exec" {
-    on_failure = fail
-    environment = {
-      OCI_TOKEN = oci_identity_auth_token.auth_token_registry.token
-      OCI_USERNAME = format("%s/%s",data.oci_objectstorage_namespace.object_storage_namespace.namespace,var.oci_username)
-      COMPARTMENT_NAME = local.repository_name_prefix
-      REGION = data.oci_identity_regions.region.regions[0]["key"]
-      NAMESPACE = data.oci_objectstorage_namespace.object_storage_namespace.namespace
-      HUB_DOMAIN_NAME = var.hub_domain_name
-    }
-
-    command = "podman run --rm -e OCI_TOKEN -e COMPARTMENT_NAME -e NAMESPACE -e REGION -e OCI_USERNAME -e HUB_DOMAIN_NAME hackoladepublic.azurecr.io/model-hub-sync/copy-docker-images:production"
-  }
-}
